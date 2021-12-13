@@ -1,21 +1,50 @@
-import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, FlatList } from 'react-native';
+import ColorBox from './components/ColorBox';
 
-export default function App() {
+const App = () => {
+  const colors = ['2aa198', '268bd2', 'd33682', 'cb4b16'];
+  const colorNames = ['Cyan', 'Blue', 'Magenta', 'Orange'];
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <SafeAreaView style={[styles.safeArea]}>
+        <View style={styles.container}>
+          <View>
+            <Text style={{ fontWeight: 'bold' }}>
+              Here are some boxes of different colours
+            </Text>
+            {colors.map((val, idx) => (
+              <ColorBox
+                colorHex={`#${val}`}
+                colorName={colorNames[idx]}
+                key={idx}
+              />
+            ))}
+            {/* <FlatList
+            data={colors}
+            keyExtractor={(_colors, idx) => idx}
+            renderItem={({ item, index }) => (
+              <ColorBox colorHex={`#${item}`} colorName={colorNames[index]} />
+            )}
+          /> */}
+          </View>
+        </View>
+      </SafeAreaView>
+    </NavigationContainer>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
+    backgroundColor: 'pink',
     justifyContent: 'center',
+    flex: 1,
+  },
+  safeArea: {
+    flex: 2,
   },
 });
+
+export default App;
