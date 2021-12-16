@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 
-const Home = ({ navigation }) => {
+const Home = ({ navigation, route }) => {
   const [colorPalettes, setColorPalettes] = React.useState([]);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const fetchPaletteData = React.useCallback(async () => {
@@ -12,6 +12,15 @@ const Home = ({ navigation }) => {
   React.useEffect(() => {
     fetchPaletteData();
   }, []);
+
+  useEffect(() => {
+    if (!!route.params) {
+      setColorPalettes((colorPalettes) => [
+        route.params.newPaletteInfo,
+        ...colorPalettes,
+      ]);
+    }
+  }, [route.params]);
 
   const refreshAction = React.useCallback(async () => {
     setIsRefreshing(true);

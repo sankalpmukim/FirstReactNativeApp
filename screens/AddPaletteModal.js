@@ -6,6 +6,8 @@ import {
   StyleSheet,
   FlatList,
   Switch,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
 import Separator from '../components/Separator';
 
@@ -159,7 +161,7 @@ const COLORS = [
   { colorName: 'YellowGreen', hexCode: '#9ACD' },
 ];
 
-const AddNewPalette = () => {
+const AddNewPalette = ({ navigation }) => {
   const [name, setName] = useState('');
   const [selectedColours, setSelectedColours] = useState([]);
 
@@ -175,9 +177,24 @@ const AddNewPalette = () => {
     }
   }, []);
 
+  const handleSubmitEvent = useCallback(() => {
+    if (name === '') {
+      Alert.alert('Name of palette cannot be empty!');
+    } else if (selectedColours.length < 3) {
+      Alert.alert('Selected colours must be at least 3');
+    } else {
+      navigation.navigate('Home', {
+        newPaletteInfo: {
+          paletteName: name,
+          colors: selectedColours,
+        },
+      });
+    }
+  }, [name, selectedColours]);
+
   return (
     <View style={styles.page}>
-      <View>
+      <View style={styles.nameContainer}>
         <View>
           <Text style={styles.nameCaption}>Enter name of new Modal</Text>
         </View>
@@ -188,30 +205,46 @@ const AddNewPalette = () => {
           onChangeText={(text) => setName(text)}
         />
       </View>
-      <View>
+      <View style={styles.switchList}>
         <FlatList
           data={COLORS}
           keyExtractor={(_item, index) => index}
           ListHeaderComponent={<Separator />}
           renderItem={({ item, index }) => (
-            <View>
-              <Text>{item.colorName}</Text>
-              <Switch
-                trackColor={{ false: '#767577', true: '#81b0ff' }}
-                thumbColor={selectedColours[index] ? '#f5dd4b' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={(v) => {}}
-                value={
-                  !!selectedColours.find(
-                    (val) => val.colorName === item.colorName,
-                  )
-                }
-              />
+            <>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text>{item.colorName}</Text>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#81b0ff' }}
+                  thumbColor={selectedColours[index] ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={(v) => {
+                    handleValueChange(v, item);
+                  }}
+                  value={
+                    !!selectedColours.find(
+                      (val) => val.colorName === item.colorName,
+                    )
+                  }
+                />
+              </View>
               <Separator />
-            </View>
+            </>
           )}
         />
       </View>
+      <TouchableOpacity
+        style={styles.submitContainer}
+        onPress={handleSubmitEvent}
+      >
+        <Text style={styles.submitText}>Submit</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -220,6 +253,9 @@ const styles = StyleSheet.create({
   page: {
     marginTop: 15,
     marginHorizontal: 15,
+  },
+  nameContainer: {
+    marginBottom: 10,
   },
   nameCaption: {
     fontWeight: 'bold',
@@ -231,6 +267,22 @@ const styles = StyleSheet.create({
     height: 50,
     paddingHorizontal: 10,
     marginTop: 15,
+  },
+  switchList: {
+    height: 520,
+    paddingVertical: 10,
+  },
+  submitContainer: {
+    backgroundColor: 'teal',
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  submitText: {
+    fontWeight: 'bold',
+    fontSize: 15,
+    color: 'white',
   },
 });
 
